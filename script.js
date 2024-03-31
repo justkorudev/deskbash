@@ -144,10 +144,15 @@ if (!fs['/home']) {
 }
 localStorage.setItem('fs', JSON.stringify(fs));
 let lwd = '/home';
+urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('cli')) {
+    changeDir(urlParams.get('cli'));
+}
 
 function changeDir(path) {
     lwd = path;
     document.getElementById('cli-prompt').innerHTML = `dbsh:${lwd}/$`;
+    window.history.pushState({}, '', `index.html?cli=${lwd}`);
 }
 
 document.getElementById('cli-input').addEventListener('keydown', function (event) {
