@@ -181,6 +181,22 @@ const commands = {
             fs[lwd].children = fs[lwd].children.map((child) => (child === oldName ? newName : child));
             localStorage.setItem('fs', JSON.stringify(fs));
         }
+    },
+    'download': (fileName) => {
+        const filePath = `${lwd}/${fileName}`;
+        if (!fs[filePath]) {
+            console.log('No such file:', filePath);
+            document.getElementById('cli-output').innerHTML += `<div>No such file: ${filePath}</div>`;
+        } else {
+            const fileContent = fs[filePath].content;
+            const blob = new Blob([fileContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
     }
 };
 
