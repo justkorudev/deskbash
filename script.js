@@ -1,7 +1,7 @@
 const commands = {
     'help': () => {
-        console.log('Available commands: help, echo, greet, clear, ls, cd, mkdir, rmdir, touch, rm, cat, editfile, ping');
-        document.getElementById('cli-output').innerHTML += '<div>Available commands: help, echo, greet</div>';
+        console.log('To get help with DeskBash, visit <a href="https://deskbash.gitbook.io/deskbash-docs/">this page</a>.');
+        document.getElementById('cli-output').innerHTML += '<div>To get help with DeskBash, visit <a href="https://deskbash.gitbook.io/deskbash-docs/">this page</a>.</div>';
     },
     'echo': (message) => {
         console.log(message);
