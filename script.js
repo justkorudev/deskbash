@@ -1,6 +1,6 @@
 const commands = {
     'help': () => {
-        console.log('Available commands: help, echo, greet, clear');
+        console.log('Available commands: help, echo, greet, clear, ls, cd, mkdir, rmdir, touch, rm, cat, editfile, ping');
         document.getElementById('cli-output').innerHTML += '<div>Available commands: help, echo, greet</div>';
     },
     'echo': (message) => {
@@ -116,6 +116,31 @@ const commands = {
             editingfilepath = `${lwd}/${fileName}`;
         }
         window.location.href = `textedit.html?file=${editingfilepath}&cli=${lwd}`;
+    },
+    'ping': (destination) => {
+        if (!destination) {
+            console.log('Please provide a destination to ping');
+            document.getElementById('cli-output').innerHTML += '<div>Please provide a destination to ping</div>';
+            return;
+        }
+        if (!destination.includes('://')) {
+            destination = `https://${destination}`;
+        }
+        fetch("https://corsproxy.io/?" + destination)
+            .then(response => response.text())
+            .then(data => {
+                console.log('Ping successful');
+                document.getElementById('cli-output').innerHTML += `<div>Ping successful!</div>`;
+            })
+            .catch(error => {
+                if (error.toString().includes('TypeError: Failed to fetch')) {
+                    console.log('Ping failed: CORS error');
+                    document.getElementById('cli-output').innerHTML += '<div>Ping failed: CORS error (more info <a href="https://deskbash.gitbook.io/deskbash-docs/common-issues#cors-errors-on-ping-command">here</a>).</div>';
+                    return;
+                }
+                console.log('Ping failed:', error);
+                document.getElementById('cli-output').innerHTML += `<div>Ping failed: ${error}</div>`;
+            });
     }
 };
 
