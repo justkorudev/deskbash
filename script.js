@@ -98,6 +98,25 @@ const commands = {
             localStorage.setItem('fs', JSON.stringify(fs));
         }
     },
+    'cat': (fileName) => {
+        const filePath = `${lwd}/${fileName}`;
+        if (fs[filePath].type !== 'file') {
+            console.log('Not a file:', filePath);
+            document.getElementById('cli-output').innerHTML += `<div>Not a file: ${filePath}</div>`;
+        } else {
+            console.log(fs[filePath].content);
+            document.getElementById('cli-output').innerHTML += `<div>${fs[filePath].content}</div>`;
+        }
+    },
+    'editfile': (fileName) => {
+        let editingfilepath = '';
+        if (fileName.includes('/')) {
+            editingfilepath = fileName;
+        } else {
+            editingfilepath = `${lwd}/${fileName}`;
+        }
+        window.location.href = `textedit.html?file=${editingfilepath}&cli=${lwd}`;
+    }
 };
 
 let fs = {
@@ -158,7 +177,7 @@ function appendStyledMessage(message, style) {
 const now = new Date();
 const dateTimeString = now.toLocaleString();
 
-const title = 'DeskBash v0.5 - Developed with ❤️ by @korudev';
+const title = 'DeskBash v0.1 - Developed with ❤️ by @korudev';
 const dateTime = `The current date and time is: ${dateTimeString}`;
 
 const titleStyle = 'color: #00ff00; font-weight: bold;';

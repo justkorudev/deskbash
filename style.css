@@ -37,8 +37,6 @@ body {
     src: url('https://justkorudev.github.io/deskbash-resources/deskbash-font.ttf') format('truetype');
 }
 
-
-    /* if the div isn't the first, add a margin-top */
-    #cli-container div:not(:first-child) {
-        margin-top: 10px;
-    }
+#cli-container div:not(:first-child) {
+    margin-top: 10px;
+}
