@@ -141,6 +141,46 @@ const commands = {
                 console.log('Ping failed:', error);
                 document.getElementById('cli-output').innerHTML += `<div>Ping failed: ${error}</div>`;
             });
+    },
+    'renfile': (oldName, newName) => {
+        const oldPath = `${lwd}/${oldName}`;
+        const newPath = `${lwd}/${newName}`;
+        if (!fs[oldPath]) {
+            console.log('No such file/directory:', oldPath);
+            document.getElementById('cli-output').innerHTML += `<div>No such file/directory: ${oldPath}</div>`;
+        } else if (fs[newPath]) {
+            console.log('File/directory already exists:', newPath);
+            document.getElementById('cli-output').innerHTML += `<div>File/directory already exists: ${newPath}</div>`;
+        } else {
+            if (fs[oldPath].type === 'dir') {
+                console.log('You cannot rename directories using this command');
+                document.getElementById('cli-output').innerHTML += '<div>You cannot rename directories using this command</div>';
+            }
+            fs[newPath] = fs[oldPath];
+            delete fs[oldPath];
+            fs[lwd].children = fs[lwd].children.map((child) => (child === oldName ? newName : child));
+            localStorage.setItem('fs', JSON.stringify(fs));
+        }
+    },
+    'rendir': (oldName, newName) => {
+        const oldPath = `${lwd}/${oldName}`;
+        const newPath = `${lwd}/${newName}`;
+        if (!fs[oldPath]) {
+            console.log('No such file/directory:', oldPath);
+            document.getElementById('cli-output').innerHTML += `<div>No such file/directory: ${oldPath}</div>`;
+        } else if (fs[newPath]) {
+            console.log('File/directory already exists:', newPath);
+            document.getElementById('cli-output').innerHTML += `<div>File/directory already exists: ${newPath}</div>`;
+        } else {
+            if (fs[oldPath].type === 'file') {
+                console.log('You cannot rename files using this command');
+                document.getElementById('cli-output').innerHTML += '<div>You cannot rename files using this command</div>';
+            }
+            fs[newPath] = fs[oldPath];
+            delete fs[oldPath];
+            fs[lwd].children = fs[lwd].children.map((child) => (child === oldName ? newName : child));
+            localStorage.setItem('fs', JSON.stringify(fs));
+        }
     }
 };
 

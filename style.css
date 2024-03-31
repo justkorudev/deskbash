@@ -1,16 +1,37 @@
 body {
-    background-color: #000;
     color: #fff;
     font-family: 'DeskBashFont', monospace;
     padding: 10px;
+    background-color: black;
+  background-image: radial-gradient(
+    rgba(0, 150, 0, 0.5), black 120%
+  );
+  height: 100vh;
 }
 
+body::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(black, 0.15),
+      rgba(black, 0.15) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    z-index: 5;
+  }
+
 #cli-container {
-    background-color: #000;
+    background-color: transparent;
     color: #fff;
     font-family: 'DeskBashFont', monospace;
     padding: 10px;
-    font-size: 1.1em;
+    font-size: 1.3em;
 }
 
 #cli-prompt-container {
@@ -29,7 +50,7 @@ body {
     color: #fff;
     outline: none;
     width: 100%;
-    font-size: 1em;
+    font-size: 1.1em;
 }
 
 @font-face {
