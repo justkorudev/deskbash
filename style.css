@@ -1,0 +1,38 @@
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'DeskBashFont', monospace;
+    padding: 10px;
+}
+
+#cli-container {
+    background-color: #000;
+    color: #fff;
+    font-family: 'DeskBashFont', monospace;
+    padding: 10px;
+    font-size: 1.1em;
+}
+
+#cli-prompt-container {
+    display: flex;
+    align-items: center;
+}
+
+#cli-prompt {
+    margin-right: 5px;
+}
+
+#cli-input {
+    font-family: 'DeskBashFont', monospace;
+    background: transparent;
+    border: none;
+    color: #fff;
+    outline: none;
+    width: 100%;
+    font-size: 1em;
+}
+
+@font-face {
+    font-family: 'DeskBashFont';
+    src: url('https://justkorudev.github.io/deskbash-resources/deskbash-font.ttf') format('truetype');
+}
