@@ -1,4 +1,5 @@
 const extensionstoreurl = 'https://justkoru.github.io/deskbash-extensions/';
+const version = '2.0';
 let extensionsinstalled = [];
 const systemcommands = {
     'help': () => {
@@ -290,7 +291,7 @@ function appendStyledMessage(message, style) {
 const now = new Date();
 const dateTimeString = now.toLocaleString();
 
-const title = 'DeskBash v2 - Developed with ❤️ by @korudev';
+const title = 'DeskBash v' + version + ' - Developed with ❤️ by @korudev';
 const dateTime = `The current date and time is: ${dateTimeString}`;
 
 const titleStyle = 'color: #00ff00; font-weight: bold;';
