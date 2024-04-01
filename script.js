@@ -1,6 +1,6 @@
 const extensionstoreurl = 'https://justkorudev.github.io/deskbash-extensions/';
 const version = '2.0';
-let extensionsinstalled = [];
+
 const systemcommands = {
     'help': () => {
         console.log('To get help with DeskBash, visit <a href="https://deskbash.gitbook.io/deskbash-docs/">this page</a>.');
@@ -212,9 +212,16 @@ const systemcommands = {
                 }
                 data = eval(`(${data})`);
                 extensioncommands = { ...extensioncommands, ...data.commands };
-                localStorage.setItem('extensioncommands', JSON.stringify(extensioncommands));
+                // for each function in extensioncommands, convert it to string and add it to extensioncommandsstring, making it a valid json string
+                let extensioncommandsstring = '';
+                for (const [key, value] of Object.entries(extensioncommands)) {
+                    extensioncommandsstring += `{"${key}": ${value.toString()}},`;
+                }
+                localStorage.setItem('extensioncommands', extensioncommandsstring);
+                console.log(localStorage.getItem('extensioncommands'));
                 availablecommands = { ...systemcommands, ...extensioncommands };
-                extensionsinstalled.push(data);
+                extensionsinstalled.push(data.name);
+                localStorage.setItem('extensionsinstalled', JSON.stringify(extensionsinstalled));
                 console.log('Extension installed:', extName);
                 document.getElementById('cli-output').innerHTML += `<div>Extension installed: ${extName}</div>`;
             })
@@ -242,12 +249,24 @@ if (!localStorage.getItem('fs')) {
     fs = JSON.parse(localStorage.getItem('fs'));
 }
 
+let extensionsinstalled = [];
+
+if (!localStorage.getItem('extensionsinstalled')) {
+    localStorage.setItem('extensionsinstalled', JSON.stringify(extensionsinstalled));
+} else {
+    extensionsinstalled = JSON.parse(localStorage.getItem('extensionsinstalled'));
+}
+
 let extensioncommands = {};
 
 if (!localStorage.getItem('extensioncommands')) {
     localStorage.setItem('extensioncommands', JSON.stringify(extensioncommands));
 } else {
-    extensioncommands = JSON.parse(localStorage.getItem('extensioncommands'));
+    const extensioncommandsstring = localStorage.getItem('extensioncommands');
+    const extensioncommandsarray = eval(`[${extensioncommandsstring}]`);
+    for (const command of extensioncommandsarray) {
+        extensioncommands = { ...extensioncommands, ...command };
+    }
 }
 
 let availablecommands = { ...systemcommands, ...extensioncommands };
