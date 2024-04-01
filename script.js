@@ -1,4 +1,4 @@
-const extensionstoreurl = 'https://justkoru.github.io/deskbash-extensions/';
+const extensionstoreurl = 'https://justkorudev.github.io/deskbash-extensions/';
 const version = '2.0';
 let extensionsinstalled = [];
 const systemcommands = {
@@ -202,18 +202,25 @@ const systemcommands = {
         }
     },
     'getextension': (extName) => {
-        fetch(`${extensionstoreurl}${extName}.json`)
-            .then(response => response.json())
+        fetch(`${extensionstoreurl}${extName}.js`)
+            .then(response => response.text())
             .then(data => {
+                if (extensionsinstalled.find(ext => ext.name === data.name)) {
+                    console.log('Extension already installed:', extName);
+                    document.getElementById('cli-output').innerHTML += `<div>Extension already installed: ${extName}</div>`;
+                    return;
+                }
+                data = eval(`(${data})`);
                 extensioncommands = { ...extensioncommands, ...data.commands };
                 localStorage.setItem('extensioncommands', JSON.stringify(extensioncommands));
+                availablecommands = { ...systemcommands, ...extensioncommands };
                 extensionsinstalled.push(data);
                 console.log('Extension installed:', extName);
                 document.getElementById('cli-output').innerHTML += `<div>Extension installed: ${extName}</div>`;
             })
             .catch(error => {
-                console.log('Extension not found:', extName);
-                document.getElementById('cli-output').innerHTML += `<div>Extension not found: ${extName}</div>`;
+                console.log('Error installing ', extName, ": " + error);
+                document.getElementById('cli-output').innerHTML += `<div>Error installing ${extName}.</div>`;
             });
     },
 };
