@@ -1,4 +1,6 @@
-const commands = {
+const extensionstoreurl = 'https://justkoru.github.io/deskbash-extensions/';
+let extensionsinstalled = [];
+const systemcommands = {
     'help': () => {
         console.log('To get help with DeskBash, visit <a href="https://deskbash.gitbook.io/deskbash-docs/">this page</a>.');
         document.getElementById('cli-output').innerHTML += '<div>To get help with DeskBash, visit <a href="https://deskbash.gitbook.io/deskbash-docs/">this page</a>.</div>';
@@ -197,7 +199,22 @@ const commands = {
             a.click();
             URL.revokeObjectURL(url);
         }
-    }
+    },
+    'getextension': (extName) => {
+        fetch(`${extensionstoreurl}${extName}.json`)
+            .then(response => response.json())
+            .then(data => {
+                extensioncommands = { ...extensioncommands, ...data.commands };
+                localStorage.setItem('extensioncommands', JSON.stringify(extensioncommands));
+                extensionsinstalled.push(data);
+                console.log('Extension installed:', extName);
+                document.getElementById('cli-output').innerHTML += `<div>Extension installed: ${extName}</div>`;
+            })
+            .catch(error => {
+                console.log('Extension not found:', extName);
+                document.getElementById('cli-output').innerHTML += `<div>Extension not found: ${extName}</div>`;
+            });
+    },
 };
 
 let fs = {
@@ -216,6 +233,16 @@ if (!localStorage.getItem('fs')) {
 } else {
     fs = JSON.parse(localStorage.getItem('fs'));
 }
+
+let extensioncommands = {};
+
+if (!localStorage.getItem('extensioncommands')) {
+    localStorage.setItem('extensioncommands', JSON.stringify(extensioncommands));
+} else {
+    extensioncommands = JSON.parse(localStorage.getItem('extensioncommands'));
+}
+
+let availablecommands = { ...systemcommands, ...extensioncommands };
 
 if (!fs['/home']) {
     fs['/home'] = {
@@ -241,8 +268,8 @@ document.getElementById('cli-input').addEventListener('keydown', function (event
         const input = this.value;
         this.value = '';
         const [command, ...args] = input.split(' ');
-        if (commands[command]) {
-            commands[command](...args);
+        if (availablecommands[command]) {
+            availablecommands[command](...args);
         } else {
             console.log('Command not found:', command);
             document.getElementById('cli-output').innerHTML += `<div>Command not found: ${command}</div>`;
@@ -263,7 +290,7 @@ function appendStyledMessage(message, style) {
 const now = new Date();
 const dateTimeString = now.toLocaleString();
 
-const title = 'DeskBash v0.1 - Developed with ❤️ by @korudev';
+const title = 'DeskBash v2 - Developed with ❤️ by @korudev';
 const dateTime = `The current date and time is: ${dateTimeString}`;
 
 const titleStyle = 'color: #00ff00; font-weight: bold;';
