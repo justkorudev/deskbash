@@ -316,8 +316,8 @@ const systemcommands = {
                 document.getElementById('cli-output').innerHTML += `<div>Error downloading file.</div>`;
             });
     },
-    'y' : () => {},
-    'n' : () => {}
+    'y': () => { },
+    'n': () => { }
 };
 
 let fs = {
@@ -416,13 +416,44 @@ const heartStyle = 'color: #ff0000;';
 const authorStyle = 'color: #00ffff;';
 const dateTimeStyle = 'color: #ffff00; margin-top: 0px';
 
-appendStyledMessage(title, titleStyle);
-appendStyledMessage(dateTime, dateTimeStyle);
-
 document.addEventListener('click', function (event) {
     const cliContainer = document.getElementById('cli-container');
     if (!cliContainer.contains(event.target)) {
         const inputField = document.getElementById('cli-input');
         inputField.focus();
     }
+});
+
+function logTextProgessively(text, delay, style, callback) {
+    let i = 0;
+    const outputDiv = document.getElementById('cli-output');
+    const textElement = document.createElement('div');
+    if (style) {
+        textElement.style.cssText = style;
+    }
+    outputDiv.appendChild(textElement);
+    const intervalId = setInterval(() => {
+        if (i >= text.length) {
+            clearInterval(intervalId);
+            if (callback) {
+                callback();
+            }
+        }
+        if (!text[i]) {
+            return;
+        }
+        const letter = text[i];
+        letterElement = document.createElement('p');
+        letterElement.innerHTML = letter;
+        textElement.appendChild(letterElement);
+        textElement.innerHTML = textElement.innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, '');
+        i++;
+    }, delay);
+}
+
+logTextProgessively(title, 40, titleStyle, () => {
+    logTextProgessively(dateTime, 40, dateTimeStyle, () => {
+        const cpc = document.getElementById('cli-prompt-container');
+        cpc.style.display = 'flex';
+    });
 });
