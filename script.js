@@ -230,6 +230,94 @@ const systemcommands = {
                 document.getElementById('cli-output').innerHTML += `<div>Error installing ${extName}.</div>`;
             });
     },
+    'installextension': (file) => {
+        console.log('Warning: Installing extensions from untrusted sources can be a security risk.');
+        document.getElementById('cli-output').innerHTML += '<div style="color: #ff0000">Warning: Installing extensions from untrusted sources can be a security risk. Do you want to continue? (y/n)</div>';
+        const containerDiv = document.getElementById('cli-output');
+        containerDiv.scrollTop = containerDiv.scrollHeight;
+        function waitForUserInput() {
+            return new Promise((resolve) => {
+                document.getElementById('cli-input').addEventListener('keydown', function (event) {
+                    if (event.key === 'y' || event.key === 'n') {
+                        const input = event.key;
+                        this.value = '';
+                        resolve(input);
+                    }
+                });
+            });
+        }
+        waitForUserInput().then((input) => {
+            console.log(input);
+            if (input === 'y') {
+                console.log('Installation confirmed');
+                document.getElementById('cli-input').value = '';
+                document.getElementById('cli-output').innerHTML += '<div>Installation confirmed</div>';
+                let extensionfile = '';
+                if (file.includes('/')) {
+                    extensionfile = file;
+                } else {
+                    extensionfile = `${lwd}/${file}`;
+                }
+                if (!fs[extensionfile]) {
+                    console.log('No such file:', extensionfile);
+                    document.getElementById('cli-output').innerHTML += `<div>No such file: ${extensionfile}</div>`;
+                    return;
+                }
+                if (!extensionfile.endsWith('.dbex')) {
+                    console.log('Not a .dbex file:', extensionfile);
+                    document.getElementById('cli-output').innerHTML += `<div>Not a .dbex extension file: ${extensionfile}</div>`;
+                    return;
+                }
+                const extensioncontent = fs[extensionfile].content;
+                let extname = '';
+                extname = eval(`(${extensioncontent})`).name;;
+                if (extensionsinstalled.find(ext => ext === extname)) {
+                    console.log('Extension already installed:', extname);
+                    document.getElementById('cli-output').innerHTML += `<div>Extension already installed: ${extname}</div>`;
+                    return;
+                }
+                let extensioncommands = eval(`(${extensioncontent})`).commands;
+                extensioncommands = { ...extensioncommands, ...extensioncommands };
+                let extensioncommandsstring = '';
+                for (const [key, value] of Object.entries(extensioncommands)) {
+                    extensioncommandsstring += `{"${key}": ${value.toString()}},`;
+                }
+                localStorage.setItem('extensioncommands', extensioncommandsstring);
+                availablecommands = { ...systemcommands, ...extensioncommands };
+                extensionsinstalled.push(extname);
+                localStorage.setItem('extensionsinstalled', JSON.stringify(extensionsinstalled));
+                console.log('Extension installed:', extname);
+                document.getElementById('cli-output').innerHTML += `<div>Extension installed: ${extname}</div>`;
+            } else {
+                console.log('Installation cancelled');
+                document.getElementById('cli-input').value = '';
+                document.getElementById('cli-output').innerHTML += '<div>Installation cancelled</div>';
+                return;
+            }
+        });
+
+    },
+    'importfile': (url) => {
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                const fileName = url.split('/').pop();
+                fs[`${lwd}/${fileName}`] = {
+                    type: 'file',
+                    content: data,
+                };
+                fs[lwd].children.push(fileName);
+                localStorage.setItem('fs', JSON.stringify(fs));
+                console.log('File imported:', fileName);
+                document.getElementById('cli-output').innerHTML += `<div>File imported: ${fileName}</div>`;
+            })
+            .catch(error => {
+                console.log("Error downloading file: " + error)
+                document.getElementById('cli-output').innerHTML += `<div>Error downloading file.</div>`;
+            });
+    },
+    'y' : () => {},
+    'n' : () => {}
 };
 
 let fs = {
@@ -292,6 +380,9 @@ function changeDir(path) {
 
 document.getElementById('cli-input').addEventListener('keydown', function (event) {
     if (event.key === 'Enter') {
+        if (!this.value) {
+            return;
+        }
         const input = this.value;
         this.value = '';
         const [command, ...args] = input.split(' ');
